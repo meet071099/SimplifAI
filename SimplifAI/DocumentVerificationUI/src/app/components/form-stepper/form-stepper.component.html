@@ -1,0 +1,96 @@
+<div class="stepper-container">
+  <!-- Form Initialization Loading State -->
+  <div *ngIf="isInitializing" class="initialization-loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-message">
+      <h3>Initializing Form...</h3>
+      <p>Please wait while we prepare your form.</p>
+    </div>
+  </div>
+
+  <!-- Initialization Error State -->
+  <div *ngIf="initializationError && !isInitializing" class="initialization-error">
+    <div class="error-icon">⚠️</div>
+    <div class="error-message">
+      <h3>Form Initialization Failed</h3>
+      <p>{{ initializationError }}</p>
+      <button type="button" class="btn btn-primary retry-btn" (click)="retryInitialization()">
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Demo Mode Indicator -->
+  <div *ngIf="isDemoMode && formReady" class="demo-mode-indicator">
+    <div class="demo-icon">🔧</div>
+    <div class="demo-message">
+      <strong>Demo Mode:</strong> You're working offline. Your data won't be saved to the server.
+    </div>
+  </div>
+
+  <!-- Main Form Content (only show when form is ready) -->
+  <div *ngIf="formReady && !isInitializing" class="form-content">
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <div class="progress-text">Step {{ currentStep }} of {{ totalSteps }}</div>
+    </div>
+
+    <!-- Step Navigation -->
+    <div class="steps-nav">
+      <div 
+        *ngFor="let step of steps; let i = index" 
+        class="step-item"
+        [class.active]="step.id === currentStep"
+        [class.completed]="step.completed"
+        [class.valid]="step.valid"
+        [class.invalid]="!step.valid && step.id < currentStep"
+        [class.clickable]="canNavigateToStep(step.id)"
+        [class.disabled]="!formReady || isInitializing"
+        (click)="navigateToStep(step.id)">
+        
+        <div class="step-circle">
+          <span *ngIf="!step.completed && step.id !== currentStep" class="step-number">{{ step.id }}</span>
+          <span *ngIf="!step.completed && !step.valid && step.id < currentStep" class="error-icon">!</span>
+          <span *ngIf="!step.completed && step.id === currentStep" class="step-number current">{{ step.id }}</span>
+          <span *ngIf="step.completed" class="checkmark">✓</span>
+        </div>
+        <div class="step-label">{{ step.name }}</div>
+        
+        <!-- Connection line to next step -->
+        <div *ngIf="i < steps.length - 1" class="step-connector" 
+             [class.completed]="step.completed"></div>
+      </div>
+    </div>
+
+    <!-- Step Content -->
+    <div class="step-content" [class.step-entering]="isTransitioning">
+      <app-personal-info-step *ngIf="currentStep === 1" [formId]="formId"></app-personal-info-step>
+      <app-document-upload-step *ngIf="currentStep === 2" [formId]="formId"></app-document-upload-step>
+      <app-review-step *ngIf="currentStep === 3" [formId]="formId"></app-review-step>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation-buttons">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        [disabled]="isPreviousStepDisabled()"
+        (click)="previousStep()">
+        <span class="btn-icon">←</span>
+        Previous
+      </button>
+      
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        [disabled]="isNextStepDisabled()"
+        (click)="nextStep()">
+        Next
+        <span class="btn-icon">→</span>
+      </button>
+    </div>
+  </div>
+</div>

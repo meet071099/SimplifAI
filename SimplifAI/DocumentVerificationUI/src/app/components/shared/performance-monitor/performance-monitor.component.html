@@ -1,0 +1,114 @@
+<!-- Performance Monitor Toggle Button -->
+<div class="performance-monitor-toggle" [class.active]="isVisible">
+  <button 
+    class="toggle-btn" 
+    (click)="toggleVisibility()" 
+    title="Performance Monitor">
+    📊
+  </button>
+</div>
+
+<!-- Performance Monitor Panel -->
+<div class="performance-monitor-panel" [class.visible]="isVisible">
+  <div class="panel-header">
+    <h3>Performance Monitor</h3>
+    <button class="close-btn" (click)="toggleVisibility()">×</button>
+  </div>
+
+  <div class="panel-content">
+    <!-- System Health -->
+    <div class="section" *ngIf="systemHealth">
+      <h4>System Health</h4>
+      <div class="health-info">
+        <div class="health-item">
+          <span class="label">Status:</span>
+          <span class="value" [style.color]="getStatusColor(systemHealth.status)">
+            {{ systemHealth.status }}
+          </span>
+        </div>
+        <div class="health-item">
+          <span class="label">Uptime:</span>
+          <span class="value">{{ systemHealth.upTime }}</span>
+        </div>
+        <div class="health-item">
+          <span class="label">Memory:</span>
+          <span class="value">{{ formatBytes(systemHealth.workingSet) }}</span>
+        </div>
+        <div class="health-item">
+          <span class="label">CPU Cores:</span>
+          <span class="value">{{ systemHealth.processorCount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cache Statistics -->
+    <div class="section" *ngIf="cacheStats">
+      <h4>Cache Statistics</h4>
+      <div class="cache-stats">
+        <div class="stat-item">
+          <span class="label">Hit Ratio:</span>
+          <span class="value">{{ cacheStats.hitRatio.toFixed(1) }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Hits:</span>
+          <span class="value">{{ cacheStats.hitCount }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Misses:</span>
+          <span class="value">{{ cacheStats.missCount }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Sets:</span>
+          <span class="value">{{ cacheStats.setCount }}</span>
+        </div>
+      </div>
+      <button class="clear-cache-btn" (click)="clearCache()">Clear Cache</button>
+    </div>
+
+    <!-- Server Performance Stats -->
+    <div class="section">
+      <h4>Server Performance (Top 5)</h4>
+      <div class="performance-stats">
+        <div class="stats-header">
+          <span>Operation</span>
+          <span>Calls</span>
+          <span>Avg Duration</span>
+          <span>Success Rate</span>
+        </div>
+        <div 
+          class="stat-row" 
+          *ngFor="let stat of getPerformanceStatsArray().slice(0, 5)">
+          <span class="operation-name">{{ stat.operationName }}</span>
+          <span class="calls">{{ stat.totalCalls }}</span>
+          <span class="duration">{{ formatDuration(stat.averageDuration) }}</span>
+          <span class="success-rate" [class.low]="stat.successRate < 95">
+            {{ stat.successRate.toFixed(1) }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Performance Stats -->
+    <div class="section">
+      <h4>Client Performance (Recent)</h4>
+      <div class="client-stats">
+        <div class="stats-header">
+          <span>Operation</span>
+          <span>Duration</span>
+          <span>Time</span>
+        </div>
+        <div 
+          class="stat-row" 
+          *ngFor="let metric of clientMetrics.slice(0, 5)">
+          <span class="operation-name">{{ metric.operation }}</span>
+          <span class="duration" [class.slow]="metric.duration > 1000">
+            {{ metric.duration.toFixed(0) }}ms
+          </span>
+          <span class="timestamp">
+            {{ new Date(metric.timestamp).toLocaleTimeString() }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

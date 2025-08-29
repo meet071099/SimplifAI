@@ -1,0 +1,180 @@
+<div class="demo-container">
+  <h2>Form Feedback Components Demo</h2>
+  
+  <!-- Demo Controls -->
+  <div class="demo-controls">
+    <h3>Test Form States</h3>
+    <div class="control-group">
+      <button class="demo-btn primary" (click)="startFormInitialization()">
+        Start Form Initialization
+      </button>
+      <button class="demo-btn danger" (click)="simulateInitializationError()">
+        Simulate Init Error
+      </button>
+      <button class="demo-btn warning" (click)="enterDemoMode()">
+        Enter Demo Mode
+      </button>
+    </div>
+    
+    <div class="control-group">
+      <button class="demo-btn success" (click)="simulateSaveOperation()">
+        Test Save Operation
+      </button>
+      <button class="demo-btn danger" (click)="showNetworkError()">
+        Show Network Error
+      </button>
+    </div>
+    
+    <div class="control-group">
+      <button class="demo-btn secondary" (click)="clearAllNotifications()">
+        Clear Notifications
+      </button>
+      <button class="demo-btn secondary" (click)="resetDemo()">
+        Reset Demo
+      </button>
+    </div>
+  </div>
+
+  <!-- Component Previews -->
+  <div class="component-previews">
+    
+    <!-- Form Loading Spinner -->
+    <div class="preview-section">
+      <h3>Form Loading Spinner</h3>
+      <div class="preview-variants">
+        <div class="variant-demo">
+          <h4>Card Variant</h4>
+          <app-form-loading-spinner
+            [visible]="isInitializing"
+            variant="card"
+            message="Initializing your form..."
+            submessage="Please wait while we set up your form"
+            [showProgress]="true"
+            [progress]="initializationProgress"
+          ></app-form-loading-spinner>
+        </div>
+        
+        <div class="variant-demo">
+          <h4>Inline Variant</h4>
+          <app-form-loading-spinner
+            [visible]="isInitializing"
+            variant="inline"
+            size="medium"
+            message="Loading form data..."
+          ></app-form-loading-spinner>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo Mode Indicator -->
+    <div class="preview-section">
+      <h3>Demo Mode Indicator</h3>
+      <div class="preview-variants">
+        <div class="variant-demo">
+          <h4>Banner Variant</h4>
+          <app-demo-mode-indicator
+            [visible]="isDemoMode"
+            variant="banner"
+            position="inline"
+            message="Demo Mode - Changes will not be saved"
+            [dismissible]="true"
+          ></app-demo-mode-indicator>
+        </div>
+        
+        <div class="variant-demo">
+          <h4>Badge Variant</h4>
+          <app-demo-mode-indicator
+            [visible]="isDemoMode"
+            variant="badge"
+            position="inline"
+            message="DEMO MODE"
+          ></app-demo-mode-indicator>
+        </div>
+        
+        <div class="variant-demo">
+          <h4>Card Variant</h4>
+          <app-demo-mode-indicator
+            [visible]="isDemoMode"
+            variant="card"
+            position="inline"
+            message="You are currently in demo mode. Your data will not be saved to the server."
+            [dismissible]="true"
+          ></app-demo-mode-indicator>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message Component -->
+    <div class="preview-section">
+      <h3>Error Message Component</h3>
+      <div class="preview-variants">
+        <div class="variant-demo">
+          <h4>Inline Error</h4>
+          <app-error-message
+            [visible]="showError"
+            variant="inline"
+            severity="error"
+            title="Form Initialization Failed"
+            message="Unable to connect to the server. Please check your internet connection and try again."
+            errorCode="CONN_001"
+            errorDetails="Network timeout after 30 seconds. Server may be temporarily unavailable."
+            [retryable]="true"
+            [actions]="errorActions"
+            (retry)="retryInitialization()"
+            (dismiss)="showError = false"
+          ></app-error-message>
+        </div>
+        
+        <div class="variant-demo">
+          <h4>Warning Message</h4>
+          <app-error-message
+            [visible]="isDemoMode"
+            variant="inline"
+            severity="warning"
+            title="Demo Mode Active"
+            message="You are currently working in demo mode. Your changes will not be saved to the server."
+            [retryable]="false"
+            [dismissible]="false"
+          ></app-error-message>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current State Display -->
+  <div class="state-display">
+    <h3>Current State</h3>
+    <div class="state-info">
+      <div class="state-item">
+        <span class="state-label">Initializing:</span>
+        <span class="state-value" [class.active]="isInitializing">{{ isInitializing }}</span>
+      </div>
+      <div class="state-item">
+        <span class="state-label">Demo Mode:</span>
+        <span class="state-value" [class.active]="isDemoMode">{{ isDemoMode }}</span>
+      </div>
+      <div class="state-item">
+        <span class="state-label">Show Error:</span>
+        <span class="state-value" [class.active]="showError">{{ showError }}</span>
+      </div>
+      <div class="state-item">
+        <span class="state-label">Save in Progress:</span>
+        <span class="state-value" [class.active]="saveInProgress">{{ saveInProgress }}</span>
+      </div>
+      <div class="state-item">
+        <span class="state-label">Progress:</span>
+        <span class="state-value">{{ initializationProgress }}%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay Loading Spinner (when active) -->
+<app-form-loading-spinner
+  [visible]="isInitializing"
+  variant="overlay"
+  message="Initializing form..."
+  submessage="Setting up your secure form environment"
+  [showProgress]="true"
+  [progress]="initializationProgress"
+></app-form-loading-spinner>

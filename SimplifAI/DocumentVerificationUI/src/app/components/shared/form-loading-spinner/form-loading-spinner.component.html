@@ -1,0 +1,71 @@
+<div [class]="containerClass" *ngIf="visible">
+  <div class="form-loading-content">
+    <!-- Main Spinner -->
+    <div class="form-spinner">
+      <div class="spinner-ring">
+        <div class="ring-segment"></div>
+        <div class="ring-segment"></div>
+        <div class="ring-segment"></div>
+        <div class="ring-segment"></div>
+      </div>
+      
+      <!-- Form Icon Overlay -->
+      <div class="form-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 12h10M7 8h6M7 16h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    
+    <!-- Loading Messages -->
+    <div class="form-loading-messages">
+      <h3 class="loading-title">{{ message }}</h3>
+      <p class="loading-subtitle" *ngIf="submessage">{{ submessage }}</p>
+      
+      <!-- Progress Bar -->
+      <div class="progress-container" *ngIf="showProgress && progress !== undefined">
+        <div class="progress-bar">
+          <div 
+            class="progress-fill" 
+            [style.width.%]="progressPercentage"
+          ></div>
+        </div>
+        <span class="progress-text">{{ progressPercentage }}%</span>
+      </div>
+    </div>
+    
+    <!-- Loading Steps Indicator -->
+    <div class="loading-steps" *ngIf="variant === 'card'">
+      <div class="step-item">
+        <div class="step-icon active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="step-label">Connecting to server</span>
+      </div>
+      
+      <div class="step-item">
+        <div class="step-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 9h6v6H9z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <span class="step-label">Creating form instance</span>
+      </div>
+      
+      <div class="step-item">
+        <div class="step-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <span class="step-label">Preparing form fields</span>
+      </div>
+    </div>
+  </div>
+</div>

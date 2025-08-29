@@ -1,0 +1,105 @@
+<div class="step-container">
+  <div class="step-header">
+    <h2>Document Upload</h2>
+    <p>Please upload your required documents for verification. All documents are required and will be automatically verified.</p>
+  </div>
+
+  <!-- Alert for general messages -->
+  <app-alert 
+    *ngIf="alertMessage"
+    [type]="alertType"
+    [message]="alertMessage"
+    [dismissible]="true"
+    (dismissed)="clearAlert()">
+  </app-alert>
+
+  <div class="documents-grid">
+    <div *ngFor="let documentType of ['Passport', 'Driver License', 'National ID', 'Birth Certificate']" 
+         class="document-upload-card">
+      
+      <div class="document-header">
+        <h3>{{ documentType }}</h3>
+        <span class="required-badge">Required</span>
+      </div>
+
+      <!-- File Upload Component -->
+      <div *ngIf="!isDocumentUploaded(documentType)">
+        <app-file-upload
+          [documentType]="documentType"
+          [acceptedTypes]="allowedExtensions.join(',')"
+          [maxSizeInMB]="10"
+          [disabled]="isDocumentUploading(documentType)"
+          (fileSelected)="onFileUploaded($event)"
+          (fileRemoved)="removeDocument($event)">
+        </app-file-upload>
+        
+        <!-- Upload Progress -->
+        <div *ngIf="isDocumentUploading(documentType)" class="upload-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" 
+                 [style.width.%]="getUploadProgressPercentage(documentType)">
+            </div>
+          </div>
+          <div class="progress-text">
+            <span>{{ getUploadStatusMessage(documentType) }}</span>
+            <span class="progress-percentage">{{ getUploadProgressPercentage(documentType) }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Verification Component -->
+      <div *ngIf="isDocumentUploaded(documentType)">
+        <app-document-verification
+          [document]="getDocumentByType(documentType)"
+          [showActions]="true"
+          [isProcessing]="isDocumentUploading(documentType)"
+          (documentAction)="onDocumentAction($event)">
+        </app-document-verification>
+        
+        <!-- Verification Progress -->
+        <div *ngIf="isDocumentUploading(documentType)" class="verification-progress">
+          <app-loading-spinner 
+            [size]="'small'" 
+            [message]="getUploadStatusMessage(documentType)">
+          </app-loading-spinner>
+        </div>
+        
+        <!-- Retry Option for Failed Documents -->
+        <div *ngIf="getDocumentByType(documentType)?.verificationStatus === 'failed'" 
+             class="retry-section">
+          <button 
+            class="retry-btn"
+            (click)="retryVerification(documentType)"
+            [disabled]="isDocumentUploading(documentType)">
+            🔄 Retry Verification
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overall Status -->
+  <div class="upload-summary">
+    <app-alert 
+      *ngIf="getAllDocumentsValid()"
+      type="success"
+      message="All documents have been uploaded and verified successfully!"
+      [dismissible]="false">
+    </app-alert>
+    
+    <app-alert 
+      *ngIf="!getAllDocumentsValid() && hasAnyDocuments()"
+      type="info"
+      message="Please upload all required documents to continue to the next step."
+      [dismissible]="false">
+    </app-alert>
+  </div>
+
+  <!-- Loading Overlay -->
+  <app-loading-spinner
+    *ngIf="isProcessingAnyDocument()"
+    [overlay]="true"
+    [message]="'Processing documents...'"
+    [size]="'large'">
+  </app-loading-spinner>
+</div>

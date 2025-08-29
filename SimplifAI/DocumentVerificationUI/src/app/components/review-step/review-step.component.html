@@ -1,0 +1,173 @@
+<div class="step-container">
+  <div class="step-header">
+    <h2>Review & Submit</h2>
+    <p>Please review your information and documents before submitting your application.</p>
+  </div>
+
+  <!-- Overall Progress -->
+  <div class="progress-overview">
+    <div class="progress-card">
+      <div class="progress-header">
+        <h3>Application Progress</h3>
+        <span class="progress-percentage">{{ getOverallCompleteness() }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getOverallCompleteness()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Personal Information Review -->
+  <div class="review-section">
+    <div class="section-header">
+      <h3>Personal Information</h3>
+      <button type="button" class="btn btn-link" (click)="editPersonalInfo()">
+        <span class="edit-icon">✏️</span> Edit
+      </button>
+    </div>
+    
+    <div class="info-grid" *ngIf="personalInfo">
+      <div class="info-item">
+        <label>First Name:</label>
+        <span>{{ personalInfo.firstName || 'Not provided' }}</span>
+      </div>
+      <div class="info-item">
+        <label>Last Name:</label>
+        <span>{{ personalInfo.lastName || 'Not provided' }}</span>
+      </div>
+      <div class="info-item">
+        <label>Email:</label>
+        <span>{{ personalInfo.email || 'Not provided' }}</span>
+      </div>
+      <div class="info-item">
+        <label>Phone:</label>
+        <span>{{ personalInfo.phone || 'Not provided' }}</span>
+      </div>
+      <div class="info-item full-width">
+        <label>Address:</label>
+        <span>{{ personalInfo.address || 'Not provided' }}</span>
+      </div>
+      <div class="info-item">
+        <label>Date of Birth:</label>
+        <span>{{ formatDate(personalInfo.dateOfBirth) }}</span>
+      </div>
+    </div>
+
+    <div class="section-status">
+      <div class="status-indicator" [class.complete]="getPersonalInfoCompleteness() === 100">
+        <span class="status-icon">{{ getPersonalInfoCompleteness() === 100 ? '✓' : '⚠' }}</span>
+        Personal Information {{ getPersonalInfoCompleteness() === 100 ? 'Complete' : 'Incomplete' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Documents Review -->
+  <div class="review-section">
+    <div class="section-header">
+      <h3>Documents</h3>
+      <button type="button" class="btn btn-link" (click)="editDocuments()">
+        <span class="edit-icon">✏️</span> Edit
+      </button>
+    </div>
+
+    <div class="documents-review">
+      <div *ngFor="let document of documents" class="document-review-item">
+        <div class="document-info">
+          <div class="document-icon">📄</div>
+          <div class="document-details">
+            <div class="document-type">{{ document.documentType }}</div>
+            <div class="document-filename" *ngIf="document.fileName">
+              {{ document.fileName }}
+            </div>
+            <div class="document-placeholder" *ngIf="!document.fileName">
+              Not uploaded
+            </div>
+          </div>
+        </div>
+
+        <div class="document-status" [class]="getDocumentStatusClass(document)">
+          <span class="status-icon">{{ getDocumentStatusIcon(document) }}</span>
+          <div class="status-details">
+            <div class="status-text">
+              <span *ngIf="!document.fileName">Not uploaded</span>
+              <span *ngIf="document.fileName && document.verificationStatus === 'pending'">Verifying...</span>
+              <span *ngIf="document.verificationStatus === 'verified'">Verified</span>
+              <span *ngIf="document.verificationStatus === 'failed'">Failed</span>
+            </div>
+            <div class="confidence-score" *ngIf="document.confidenceScore !== undefined">
+              {{ document.confidenceScore }}% confidence
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-status">
+      <div class="status-indicator" [class.complete]="getDocumentCompleteness() === 100">
+        <span class="status-icon">{{ getDocumentCompleteness() === 100 ? '✓' : '⚠' }}</span>
+        Documents {{ getDocumentCompleteness() === 100 ? 'Complete' : 'Incomplete' }}
+        ({{ uploadedDocuments.length }}/{{ documents.length }} uploaded)
+      </div>
+    </div>
+  </div>
+
+  <!-- Validation Errors -->
+  <div class="validation-errors" *ngIf="!isFormValid()">
+    <div class="error-header">
+      <span class="error-icon">⚠</span>
+      <h4>Please address the following issues:</h4>
+    </div>
+    <ul class="error-list">
+      <li *ngFor="let error of getValidationErrors()">{{ error }}</li>
+    </ul>
+  </div>
+
+  <!-- Document Status Summary -->
+  <div class="status-summary" *ngIf="uploadedDocuments.length > 0">
+    <div class="summary-item" *ngIf="verifiedDocuments.length > 0">
+      <span class="status-icon success">✓</span>
+      <span>{{ verifiedDocuments.length }} document(s) verified</span>
+    </div>
+    <div class="summary-item" *ngIf="pendingDocuments.length > 0">
+      <span class="status-icon pending">⏳</span>
+      <span>{{ pendingDocuments.length }} document(s) being verified</span>
+    </div>
+    <div class="summary-item" *ngIf="failedDocuments.length > 0">
+      <span class="status-icon error">✗</span>
+      <span>{{ failedDocuments.length }} document(s) failed verification</span>
+    </div>
+  </div>
+
+  <!-- Submit Section -->
+  <div class="submit-section">
+    <div class="submit-info" *ngIf="isFormValid()">
+      <div class="success-message">
+        <span class="status-icon">✓</span>
+        Your application is ready to submit!
+      </div>
+      <p class="submit-description">
+        By submitting this form, you confirm that all information provided is accurate and complete.
+        You will receive a confirmation email once your application has been processed.
+      </p>
+    </div>
+
+    <div class="submit-error" *ngIf="submitError">
+      <span class="error-icon">⚠</span>
+      {{ submitError }}
+    </div>
+
+    <div class="submit-actions">
+      <button 
+        type="button" 
+        class="btn btn-primary btn-lg"
+        [disabled]="!isFormValid() || isSubmitting"
+        (click)="submitForm()">
+        <span *ngIf="!isSubmitting">Submit Application</span>
+        <span *ngIf="isSubmitting">
+          <span class="spinner-small"></span>
+          Submitting...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

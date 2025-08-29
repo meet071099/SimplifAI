@@ -1,0 +1,47 @@
+<div 
+  class="alert"
+  [class]="alertClass"
+  [class.animated]="animated"
+  [class.dismissing]="!isVisible"
+  *ngIf="isVisible">
+  
+  <div class="alert-content">
+    <!-- Icon -->
+    <div class="alert-icon" *ngIf="showIcon">
+      {{ alertIcon }}
+    </div>
+    
+    <!-- Text Content -->
+    <div class="alert-text">
+      <h4 class="alert-title" *ngIf="title">{{ title }}</h4>
+      <p class="alert-message" *ngIf="message">{{ message }}</p>
+      
+      <!-- Slot for custom content -->
+      <div class="alert-custom-content">
+        <ng-content></ng-content>
+      </div>
+    </div>
+    
+    <!-- Dismiss Button -->
+    <button 
+      *ngIf="dismissible"
+      type="button"
+      class="alert-dismiss"
+      (click)="onDismiss()"
+      aria-label="Dismiss alert">
+      ✕
+    </button>
+  </div>
+  
+  <!-- Action Buttons -->
+  <div class="alert-actions" *ngIf="actions.length > 0">
+    <button
+      *ngFor="let action of actions"
+      type="button"
+      class="alert-action-btn"
+      [class.primary]="action.primary"
+      (click)="onActionClick(action.action)">
+      {{ action.label }}
+    </button>
+  </div>
+</div>

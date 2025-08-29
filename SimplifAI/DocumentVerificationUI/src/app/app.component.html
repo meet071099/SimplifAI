@@ -1,0 +1,25 @@
+<div class="app-container">
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>Document Verification System</h1>
+        <p>Secure document verification and identity management</p>
+      </div>
+      <nav class="header-nav" *ngIf="showNavigation">
+        <a routerLink="/form/new/personal-info" routerLinkActive="active" class="nav-link">
+          📋 Candidate Form
+        </a>
+        <a routerLink="/recruiter/dashboard" routerLinkActive="active" class="nav-link">
+          👥 Recruiter Dashboard
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Global Notification Component -->
+  <app-notification></app-notification>
+</div>

@@ -1,0 +1,192 @@
+<div class="dashboard-container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1>Recruiter Dashboard</h1>
+    <button class="refresh-btn" (click)="refresh()" [disabled]="isLoading">
+      <span class="refresh-icon" [class.spinning]="isLoading">🔄</span>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Dashboard Statistics -->
+  <div class="stats-grid" *ngIf="!isLoadingStats">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ stats.totalForms }}</div>
+        <div class="stat-label">Total Forms</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ stats.submittedForms }}</div>
+        <div class="stat-label">Submitted</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ stats.pendingReview }}</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ stats.approvedForms }}</div>
+        <div class="stat-label">Approved</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ stats.rejectedForms }}</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+    
+    <div class="stat-card warning" *ngIf="stats.formsWithLowConfidenceDocuments > 0">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ stats.formsWithLowConfidenceDocuments }}</div>
+        <div class="stat-label">Low Confidence</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Stats -->
+  <div class="stats-loading" *ngIf="isLoadingStats">
+    <app-loading-spinner></app-loading-spinner>
+    <p>Loading dashboard statistics...</p>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-container">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search by candidate name or email..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="filter-container">
+      <select 
+        class="status-filter" 
+        [(ngModel)]="statusFilter"
+        (change)="onStatusFilterChange()"
+      >
+        <option *ngFor="let option of statusOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Forms List -->
+  <div class="forms-section">
+    <div class="section-header">
+      <h2>Submitted Forms</h2>
+      <div class="results-info" *ngIf="!isLoading">
+        Showing {{ forms.length }} of {{ totalCount }} forms
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="forms-loading" *ngIf="isLoading">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Loading forms...</p>
+    </div>
+
+    <!-- Forms Table -->
+    <div class="forms-table-container" *ngIf="!isLoading && forms.length > 0">
+      <table class="forms-table">
+        <thead>
+          <tr>
+            <th>Candidate</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Documents</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let form of forms" class="form-row">
+            <td class="candidate-name">
+              <div class="candidate-info">
+                <span class="name">{{ form.candidateName }}</span>
+                <span class="confidence-warning" *ngIf="form.hasLowConfidenceDocuments" title="Has low confidence documents">⚠️</span>
+              </div>
+            </td>
+            <td class="candidate-email">{{ form.candidateEmail }}</td>
+            <td class="form-status">
+              <span class="status-badge" [ngClass]="getStatusClass(form.status)">
+                <span class="status-icon">{{ getStatusIcon(form.status) }}</span>
+                {{ form.status }}
+              </span>
+            </td>
+            <td class="document-count">
+              <span class="doc-count">{{ form.documentCount }}</span>
+              <span class="doc-label">docs</span>
+            </td>
+            <td class="submitted-date">{{ formatDate(form.submittedAt) }}</td>
+            <td class="actions">
+              <button 
+                class="review-btn" 
+                (click)="viewFormDetails(form.id)"
+                title="Review Form"
+              >
+                👁️ Review
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && forms.length === 0">
+      <div class="empty-icon">📋</div>
+      <h3>No forms found</h3>
+      <p *ngIf="searchTerm || statusFilter">Try adjusting your search criteria or filters.</p>
+      <p *ngIf="!searchTerm && !statusFilter">No forms have been submitted yet.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="!isLoading && totalPages > 1">
+      <button 
+        class="page-btn" 
+        (click)="onPageChange(currentPage - 1)"
+        [disabled]="currentPage === 1"
+      >
+        ← Previous
+      </button>
+      
+      <button 
+        *ngFor="let page of getPaginationPages()" 
+        class="page-btn"
+        [class.active]="page === currentPage"
+        (click)="onPageChange(page)"
+      >
+        {{ page }}
+      </button>
+      
+      <button 
+        class="page-btn" 
+        (click)="onPageChange(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+      >
+        Next →
+      </button>
+    </div>
+  </div>
+</div>

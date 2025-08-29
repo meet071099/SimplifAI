@@ -1,0 +1,160 @@
+<div class="step-container">
+  <div class="step-header">
+    <h2>Personal Information</h2>
+    <p>Please provide your personal information below. All fields marked with * are required.</p>
+    
+    <!-- Form Status Indicator -->
+    <div class="form-status-indicator" [ngClass]="getStatusMessageClass()">
+      <div class="status-content">
+        <div class="status-icon" *ngIf="isInitializing">
+          <div class="loading-spinner"></div>
+        </div>
+        <div class="status-icon" *ngIf="isSaving">
+          <div class="saving-spinner"></div>
+        </div>
+        <div class="status-icon" *ngIf="isDemoMode">⚠️</div>
+        <div class="status-icon" *ngIf="saveError">❌</div>
+        <div class="status-icon" *ngIf="lastSaveAttempt && isFormReady && !saveError && !isSaving">✅</div>
+        <span class="status-message">{{ getStatusMessage() }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isInitializing">
+    <div class="loading-content">
+      <div class="loading-spinner-large"></div>
+      <p>Initializing form...</p>
+    </div>
+  </div>
+
+  <form [formGroup]="personalInfoForm" (ngSubmit)="onSubmit()" class="personal-info-form" [class.form-disabled]="isFormDisabled()">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="firstName" class="form-label">
+          First Name *
+        </label>
+        <input
+          type="text"
+          id="firstName"
+          formControlName="firstName"
+          class="form-control"
+          [class.is-invalid]="isFieldInvalid('firstName')"
+          [class.is-valid]="isFieldValid('firstName')"
+          [disabled]="isFormDisabled()"
+          placeholder="Enter your first name"
+          autocomplete="given-name">
+        <div class="invalid-feedback" *ngIf="isFieldInvalid('firstName')">
+          {{ getFieldError('firstName') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName" class="form-label">
+          Last Name *
+        </label>
+        <input
+          type="text"
+          id="lastName"
+          formControlName="lastName"
+          class="form-control"
+          [class.is-invalid]="isFieldInvalid('lastName')"
+          [class.is-valid]="isFieldValid('lastName')"
+          [disabled]="isFormDisabled()"
+          placeholder="Enter your last name"
+          autocomplete="family-name">
+        <div class="invalid-feedback" *ngIf="isFieldInvalid('lastName')">
+          {{ getFieldError('lastName') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="email" class="form-label">
+          Email Address *
+        </label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="isFieldInvalid('email')"
+          [class.is-valid]="isFieldValid('email')"
+          [disabled]="isFormDisabled()"
+          placeholder="Enter your email address"
+          autocomplete="email">
+        <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone" class="form-label">
+          Phone Number *
+        </label>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phone"
+          class="form-control"
+          [class.is-invalid]="isFieldInvalid('phone')"
+          [class.is-valid]="isFieldValid('phone')"
+          [disabled]="isFormDisabled()"
+          placeholder="Enter your phone number"
+          autocomplete="tel">
+        <div class="invalid-feedback" *ngIf="isFieldInvalid('phone')">
+          {{ getFieldError('phone') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="address" class="form-label">
+        Address *
+      </label>
+      <textarea
+        id="address"
+        formControlName="address"
+        class="form-control"
+        [class.is-invalid]="isFieldInvalid('address')"
+        [class.is-valid]="isFieldValid('address')"
+        [disabled]="isFormDisabled()"
+        placeholder="Enter your full address"
+        rows="3"
+        autocomplete="street-address"></textarea>
+      <div class="invalid-feedback" *ngIf="isFieldInvalid('address')">
+        {{ getFieldError('address') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateOfBirth" class="form-label">
+        Date of Birth *
+      </label>
+      <input
+        type="date"
+        id="dateOfBirth"
+        formControlName="dateOfBirth"
+        class="form-control"
+        [class.is-invalid]="isFieldInvalid('dateOfBirth')"
+        [class.is-valid]="isFieldValid('dateOfBirth')"
+        [disabled]="isFormDisabled()"
+        autocomplete="bday">
+      <div class="invalid-feedback" *ngIf="isFieldInvalid('dateOfBirth')">
+        {{ getFieldError('dateOfBirth') }}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <div class="form-status" *ngIf="personalInfoForm.valid" class="success-message">
+        <span class="status-icon">✓</span>
+        Personal information is complete and valid
+      </div>
+      <div class="form-status" *ngIf="personalInfoForm.invalid && personalInfoForm.touched" class="error-message">
+        <span class="status-icon">!</span>
+        Please correct the errors above to continue
+      </div>
+    </div>
+  </form>
+</div>

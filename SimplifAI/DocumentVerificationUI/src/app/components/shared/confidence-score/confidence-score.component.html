@@ -1,0 +1,32 @@
+<div 
+  class="confidence-score"
+  [class]="'confidence-' + confidenceLevel + ' size-' + size"
+  [class.animated]="animated"
+  [title]="confidenceDescription">
+  
+  <div class="score-container">
+    <!-- Tick Icon -->
+    <div class="tick-icon">
+      <span class="tick-symbol">{{ tickIcon }}</span>
+    </div>
+    
+    <!-- Score Information -->
+    <div class="score-info">
+      <div class="score-value" *ngIf="showPercentage">
+        {{ score }}%
+      </div>
+      <div class="score-status">
+        {{ statusText }}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Progress Bar (optional visual representation) -->
+  <div class="progress-bar" *ngIf="size === 'large'">
+    <div 
+      class="progress-fill"
+      [style.width.%]="score"
+      [class]="'fill-' + confidenceLevel">
+    </div>
+  </div>
+</div>

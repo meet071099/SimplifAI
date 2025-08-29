@@ -1,0 +1,157 @@
+<div class="document-verification" *ngIf="document">
+  <div class="verification-header">
+    <h3 class="document-title">{{ document.documentType }}</h3>
+    <div class="verification-status">
+      <app-confidence-score
+        [score]="document.confidenceScore || 0"
+        [level]="document.statusColor || 'red'"
+        [size]="'medium'"
+        [animated]="true">
+      </app-confidence-score>
+    </div>
+  </div>
+  
+  <!-- Document Info -->
+  <div class="document-info" *ngIf="document.fileName">
+    <div class="file-details">
+      <span class="file-icon">📄</span>
+      <div class="file-text">
+        <p class="file-name">{{ document.fileName }}</p>
+        <p class="file-status" [class]="'status-' + (document.statusColor || 'red')">
+          {{ document.verificationStatus || 'pending' | titlecase }}
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Verification Message -->
+  <div class="verification-message">
+    <div 
+      class="message-content"
+      [class]="'message-' + (document.statusColor || 'red')">
+      <div class="message-icon">
+        <span *ngIf="document.statusColor === 'green'">✅</span>
+        <span *ngIf="document.statusColor === 'yellow'">⚠️</span>
+        <span *ngIf="document.statusColor === 'red'">❌</span>
+        <span *ngIf="isProcessing">⏳</span>
+      </div>
+      <div class="message-text-container">
+        <p class="message-text">{{ verificationMessage }}</p>
+        
+        <!-- Prominent Failure Reason Display -->
+        <div *ngIf="document.statusColor === 'red' && (document.message || document.authenticityReason)" class="failure-reason-highlight">
+          <div class="failure-type" [ngSwitch]="getFailureType()">
+            <span *ngSwitchCase="'name_mismatch'" class="failure-badge name-mismatch">
+              👤 Name Mismatch
+            </span>
+            <span *ngSwitchCase="'document_type'" class="failure-badge document-type">
+              📄 Wrong Document Type
+            </span>
+            <span *ngSwitchCase="'fraud'" class="failure-badge fraud">
+              🚫 Suspected Fraud
+            </span>
+            <span *ngSwitchCase="'unclear'" class="failure-badge unclear">
+              🔍 Unclear Information
+            </span>
+            <span *ngSwitchDefault class="failure-badge general">
+              ⚠️ Verification Failed
+            </span>
+          </div>
+          <p class="failure-details">{{ document.message || document.authenticityReason }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detailed Authenticity Information -->
+    <div *ngIf="document.aiFoundryUsed && document.statusColor === 'red'" class="authenticity-details">
+      <div class="detail-section">
+        <h4 class="detail-title">Verification Details:</h4>
+        <ul class="detail-list">
+          <li *ngIf="document.authenticityReason">
+            <strong>Issue:</strong> {{ document.authenticityReason }}
+          </li>
+          <li *ngIf="document.confidenceScore !== undefined">
+            <strong>Confidence Score:</strong> {{ document.confidenceScore }}%
+          </li>
+          <li>
+            <strong>AI Verification:</strong> Used advanced AI analysis
+          </li>
+        </ul>
+      </div>
+
+      <!-- AI Analysis - Raw Message Display -->
+      <div *ngIf="document.authenticityReason && document.statusColor === 'red'" class="explanation-section">
+        <h4 class="explanation-title">Why Document Verification Failed:</h4>
+        <div class="explanation-content">
+          <div class="failure-analysis">
+            <div class="analysis-header">
+              <span class="analysis-icon">🤖</span>
+              <span class="analysis-label">AI Agent Response</span>
+            </div>
+            <pre class="analysis-reason raw-message">{{ document.authenticityReason }}</pre>
+          </div>
+        </div>
+      </div>
+      
+      <div class="help-section">
+        <h4 class="help-title">How to fix this:</h4>
+        <ul class="help-list">
+          <li *ngIf="document.authenticityReason?.includes('name mismatch') || document.authenticityReason?.includes('Name mismatch')">
+            • Ensure the document clearly shows your full name as entered in the form
+          </li>
+          <li *ngIf="document.authenticityReason?.includes('wrong document type') || document.authenticityReason?.includes('Wrong document type')">
+            • Upload the correct document type ({{ document.documentType }})
+          </li>
+          <li *ngIf="document.authenticityReason?.includes('fake') || document.authenticityReason?.includes('tampered')">
+            • Upload an original, unmodified document
+          </li>
+          <li *ngIf="document.authenticityReason?.includes('not found') || document.authenticityReason?.includes('unclear')">
+            • Upload a clearer, higher quality image of your document
+          </li>
+          <li *ngIf="!document.authenticityReason || document.authenticityReason === 'reason not specified'">
+            • Ensure the document is clear and shows your personal information
+            • Verify the document type matches what's required ({{ document.documentType }})
+            • Make sure your name on the document matches the form exactly
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Action Buttons -->
+  <div class="verification-actions" *ngIf="showActions && !isProcessing">
+    <!-- Confirm Button (for yellow status) -->
+    <button 
+      *ngIf="showConfirmButton"
+      type="button"
+      class="action-btn confirm-btn"
+      (click)="onConfirm()">
+      <span class="btn-icon">✓</span>
+      Confirm & Continue
+    </button>
+    
+    <!-- Replace Button (for failed/blurred/wrong type) -->
+    <button 
+      *ngIf="showReplaceButton"
+      type="button"
+      class="action-btn replace-btn"
+      (click)="onReplace()">
+      <span class="btn-icon">🔄</span>
+      Replace Document
+    </button>
+    
+    <!-- Remove Button -->
+    <button 
+      type="button"
+      class="action-btn remove-btn"
+      (click)="onRemove()">
+      <span class="btn-icon">🗑️</span>
+      Remove
+    </button>
+  </div>
+  
+  <!-- Processing Indicator -->
+  <div class="processing-indicator" *ngIf="isProcessing">
+    <app-loading-spinner [size]="'small'" [message]="'Verifying document...'"></app-loading-spinner>
+  </div>
+</div>

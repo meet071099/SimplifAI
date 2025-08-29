@@ -1,0 +1,360 @@
+/* Demo Mode Indicator Base Styles */
+.demo-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease-out;
+  z-index: 100;
+}
+
+.demo-indicator.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.demo-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Position Variants */
+.position-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.position-top .demo-content {
+  width: 100%;
+  border-radius: 0;
+  justify-content: center;
+  padding: 12px 16px;
+}
+
+.position-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.position-bottom .demo-content {
+  width: 100%;
+  border-radius: 0;
+  justify-content: center;
+  padding: 12px 16px;
+}
+
+.position-inline {
+  position: relative;
+  margin: 8px 0;
+}
+
+/* Variant Styles */
+.variant-banner .demo-content {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #92400e;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+.variant-badge .demo-content {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.variant-card .demo-content {
+  background: white;
+  color: #d97706;
+  border: 2px solid #fbbf24;
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+/* Icon Styles */
+.demo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  opacity: 0.8;
+}
+
+.variant-badge .demo-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.variant-badge .demo-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Message Styles */
+.demo-message {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.demo-text {
+  line-height: 1.4;
+}
+
+.variant-badge .demo-text {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+/* Dismiss Button */
+.demo-dismiss {
+  background: none;
+  border: none;
+  color: currentColor;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.demo-dismiss:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.demo-dismiss:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Animation Variants */
+.demo-indicator.position-top {
+  animation: slideDownFade 0.4s ease-out;
+}
+
+.demo-indicator.position-bottom {
+  animation: slideUpFade 0.4s ease-out;
+}
+
+.demo-indicator.position-inline {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Pulse Animation for Attention */
+.demo-indicator.variant-banner .demo-content {
+  animation: demoPulse 3s ease-in-out infinite;
+}
+
+@keyframes demoPulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.4);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .demo-content {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+  
+  .position-top .demo-content,
+  .position-bottom .demo-content {
+    padding: 10px 16px;
+  }
+  
+  .variant-badge .demo-content {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+  
+  .variant-card .demo-content {
+    padding: 10px 12px;
+  }
+  
+  .demo-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .demo-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .demo-content {
+    padding: 8px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+  
+  .position-top .demo-content,
+  .position-bottom .demo-content {
+    padding: 8px 12px;
+  }
+  
+  .variant-badge .demo-content {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+  
+  .variant-card .demo-content {
+    padding: 8px 10px;
+  }
+  
+  .demo-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .demo-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .demo-dismiss {
+    padding: 2px;
+  }
+  
+  .demo-dismiss svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .variant-card .demo-content {
+    background: #1f2937;
+    color: #fbbf24;
+    border-color: #d97706;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .demo-content {
+    border-width: 2px;
+    font-weight: 600;
+  }
+  
+  .demo-dismiss {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .demo-indicator,
+  .demo-content,
+  .demo-dismiss {
+    animation: none;
+    transition: none;
+  }
+  
+  .demo-indicator.visible {
+    transform: none;
+  }
+}
+
+/* Focus Management */
+.demo-indicator:focus-within .demo-dismiss {
+  opacity: 1;
+}
+
+/* Print Styles */
+@media print {
+  .demo-indicator {
+    display: none;
+  }
+}
+
+/* Accessibility Enhancements */
+.demo-indicator[aria-hidden="true"] {
+  display: none;
+}
+
+.demo-content {
+  role: "status";
+  aria-live: "polite";
+}
+
+/* Custom Properties for Theming */
+.demo-indicator {
+  --demo-bg-color: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --demo-text-color: #92400e;
+  --demo-border-color: rgba(245, 158, 11, 0.3);
+  --demo-shadow-color: rgba(245, 158, 11, 0.2);
+}
+
+.variant-banner .demo-content {
+  background: var(--demo-bg-color);
+  color: var(--demo-text-color);
+  border-color: var(--demo-border-color);
+  box-shadow: 0 2px 8px var(--demo-shadow-color);
+}

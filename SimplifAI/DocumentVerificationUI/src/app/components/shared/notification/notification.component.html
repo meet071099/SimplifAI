@@ -1,0 +1,71 @@
+<!-- Notification Container -->
+<div class="notification-container">
+  <!-- Individual Notifications -->
+  <div 
+    *ngFor="let notification of notifications" 
+    class="notification"
+    [ngClass]="'notification-' + notification.type"
+  >
+    <div class="notification-content">
+      <div class="notification-header">
+        <span class="notification-icon">{{ getNotificationIcon(notification.type) }}</span>
+        <h4 class="notification-title">{{ notification.title }}</h4>
+        <button 
+          class="notification-close"
+          (click)="closeNotification(notification.id)"
+          aria-label="Close notification"
+        >
+          ×
+        </button>
+      </div>
+      
+      <p class="notification-message">{{ notification.message }}</p>
+      
+      <!-- Notification Actions -->
+      <div class="notification-actions" *ngIf="notification.actions && notification.actions.length > 0">
+        <button
+          *ngFor="let action of notification.actions"
+          class="notification-action-btn"
+          [ngClass]="'btn-' + (action.style || 'secondary')"
+          (click)="executeAction(action.action, notification.id)"
+        >
+          {{ action.label }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Dialog Overlay -->
+<div 
+  class="dialog-overlay" 
+  *ngIf="confirmationDialog"
+  (click)="closeDialog()"
+>
+  <div class="confirmation-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <span class="dialog-icon">{{ getDialogIcon(confirmationDialog.type) }}</span>
+      <h3 class="dialog-title">{{ confirmationDialog.title }}</h3>
+    </div>
+    
+    <div class="dialog-content">
+      <p class="dialog-message">{{ confirmationDialog.message }}</p>
+    </div>
+    
+    <div class="dialog-actions">
+      <button 
+        class="dialog-btn btn-secondary"
+        (click)="cancelDialog()"
+      >
+        {{ confirmationDialog.cancelText }}
+      </button>
+      <button 
+        class="dialog-btn"
+        [ngClass]="confirmationDialog.type === 'danger' ? 'btn-danger' : 'btn-primary'"
+        (click)="confirmDialog()"
+      >
+        {{ confirmationDialog.confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

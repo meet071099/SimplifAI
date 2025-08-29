@@ -1,0 +1,18 @@
+<div [class]="containerClass">
+  <div class="loading-content">
+    <!-- Spinner -->
+    <div class="spinner" [class]="spinnerClass">
+      <div class="spinner-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+    
+    <!-- Loading Message -->
+    <div class="loading-message" *ngIf="showMessage && message">
+      <p class="message-text">{{ message }}</p>
+    </div>
+  </div>
+</div>

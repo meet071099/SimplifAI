@@ -1,0 +1,213 @@
+<div class="review-container">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <app-loading-spinner></app-loading-spinner>
+    <p>Loading form details...</p>
+  </div>
+
+  <!-- Form Review Content -->
+  <div class="review-content" *ngIf="!isLoading && form">
+    <!-- Header -->
+    <div class="review-header">
+      <div class="header-left">
+        <button class="back-btn" (click)="goBack()">
+          ← Back to Dashboard
+        </button>
+        <h1>Form Review</h1>
+      </div>
+      <div class="header-right">
+        <div class="form-status">
+          <span class="status-badge" [ngClass]="getStatusClass(form.status)">
+            <span class="status-icon">{{ getStatusIcon(form.status) }}</span>
+            {{ form.status }}
+          </span>
+        </div>
+        <button class="update-status-btn" (click)="openStatusModal()">
+          Update Status
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Info -->
+    <div class="form-info-card">
+      <h3>Form Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Form ID:</label>
+          <span>{{ form.id }}</span>
+        </div>
+        <div class="info-item">
+          <label>Created:</label>
+          <span>{{ formatDate(form.createdAt) }}</span>
+        </div>
+        <div class="info-item">
+          <label>Submitted:</label>
+          <span>{{ formatDate(form.submittedAt) }}</span>
+        </div>
+        <div class="info-item">
+          <label>Recruiter:</label>
+          <span>{{ form.recruiterEmail }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Information -->
+    <div class="personal-info-card" *ngIf="form.personalInfo">
+      <h3>Personal Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Full Name:</label>
+          <span>{{ form.personalInfo.firstName }} {{ form.personalInfo.lastName }}</span>
+        </div>
+        <div class="info-item">
+          <label>Email:</label>
+          <span>{{ form.personalInfo.email }}</span>
+        </div>
+        <div class="info-item">
+          <label>Phone:</label>
+          <span>{{ form.personalInfo.phone || 'N/A' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Address:</label>
+          <span>{{ form.personalInfo.address || 'N/A' }}</span>
+        </div>
+        <div class="info-item" *ngIf="form.personalInfo.dateOfBirth">
+          <label>Date of Birth:</label>
+          <span>{{ formatDate(form.personalInfo.dateOfBirth) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents Section -->
+    <div class="documents-section">
+      <div class="section-header">
+        <h3>Documents ({{ form.documents.length }})</h3>
+        <div class="confidence-warning" *ngIf="hasLowConfidenceDocuments()">
+          ⚠️ Some documents have low confidence scores
+        </div>
+      </div>
+
+      <div class="documents-grid">
+        <div class="document-card" *ngFor="let document of form.documents">
+          <div class="document-header">
+            <div class="document-title">
+              <span class="document-icon">📄</span>
+              <div class="document-info">
+                <h4>{{ document.documentType }}</h4>
+                <p class="filename">{{ document.fileName }}</p>
+              </div>
+            </div>
+            <div class="document-actions">
+              <button class="action-btn view-btn" (click)="viewDocument(document)" title="View Document">
+                👁️
+              </button>
+              <button class="action-btn download-btn" (click)="downloadDocument(document)" title="Download">
+                📥
+              </button>
+            </div>
+          </div>
+
+          <div class="document-details">
+            <div class="detail-row">
+              <label>File Size:</label>
+              <span>{{ formatFileSize(document.fileSize) }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Uploaded:</label>
+              <span>{{ formatDate(document.uploadedAt) }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Content Type:</label>
+              <span>{{ document.contentType }}</span>
+            </div>
+          </div>
+
+          <div class="verification-status">
+            <div class="status-header">
+              <h5>Verification Status</h5>
+              <span class="verification-badge" [ngClass]="getConfidenceClass(document.confidenceScore)">
+                {{ getConfidenceIcon(document.confidenceScore) }}
+                {{ document.verificationStatus }}
+              </span>
+            </div>
+
+            <div class="confidence-score" *ngIf="document.confidenceScore !== undefined">
+              <app-confidence-score 
+                [score]="document.confidenceScore"
+                [showLabel]="true">
+              </app-confidence-score>
+            </div>
+
+            <div class="verification-details">
+              <div class="detail-item" [class.error]="document.isBlurred">
+                <span class="detail-icon">{{ document.isBlurred ? '❌' : '✅' }}</span>
+                <span>{{ document.isBlurred ? 'Blurred' : 'Clear' }}</span>
+              </div>
+              <div class="detail-item" [class.error]="!document.isCorrectType">
+                <span class="detail-icon">{{ document.isCorrectType ? '✅' : '❌' }}</span>
+                <span>{{ document.isCorrectType ? 'Correct Type' : 'Type Mismatch' }}</span>
+              </div>
+            </div>
+
+            <div class="status-message">
+              <p>{{ getDocumentStatusMessage(document) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Documents -->
+      <div class="no-documents" *ngIf="form.documents.length === 0">
+        <div class="empty-icon">📄</div>
+        <p>No documents uploaded</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Update Modal -->
+  <div class="modal-overlay" *ngIf="showStatusModal" (click)="closeStatusModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Update Form Status</h3>
+        <button class="close-btn" (click)="closeStatusModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="status-select">New Status:</label>
+          <select id="status-select" [(ngModel)]="selectedStatus" class="status-select">
+            <option value="">Select Status</option>
+            <option *ngFor="let option of statusOptions" [value]="option.value">
+              {{ option.icon }} {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="review-notes">Review Notes (Optional):</label>
+          <textarea 
+            id="review-notes" 
+            [(ngModel)]="reviewNotes" 
+            class="review-notes"
+            placeholder="Add any notes about your review decision..."
+            rows="4">
+          </textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-btn" (click)="closeStatusModal()" [disabled]="isUpdatingStatus">
+          Cancel
+        </button>
+        <button 
+          class="update-btn" 
+          (click)="updateFormStatus()" 
+          [disabled]="!selectedStatus || isUpdatingStatus"
+        >
+          <span *ngIf="isUpdatingStatus">Updating...</span>
+          <span *ngIf="!isUpdatingStatus">Update Status</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
