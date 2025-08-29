@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "i62kI+Uhvf5AUmZuRTNHC2lTmJxVGlpyXXRPci8JW1w=",
+  "Source": "DocumentVerificationAPI",
+  "BasePath": "_content/DocumentVerificationAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
